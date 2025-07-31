@@ -27,14 +27,14 @@ Available at: https://hub.docker.com/r/pytorch/pytorch
    pip install -r requirements.txt
 
 4. Install System and FAISS Dependencies
-   # System packages
+   #### \# System packages
    apt install -y python3-dev
 
-   # Conda packages
+   #### \# Conda packages
    conda install -c conda-forge swig=4.3.0 gflags -y
    conda install mkl mkl-devel -y
 
-   # Pip packages
+   #### \# Pip packages
    pip install -r requirement.txt
 
 5. Build Custom FAISS for HeteRAG
