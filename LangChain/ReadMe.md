@@ -1,0 +1,3 @@
+- To run the tests just run master_script.sh.
+- Make sure to be in a python virtual environment with all requirements installed prior to running the experiments.
+- For testing out different models simple uncomment the particular model in the run_baseline_expts_2.py file.

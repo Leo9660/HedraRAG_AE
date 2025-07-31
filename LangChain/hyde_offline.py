@@ -1,0 +1,164 @@
+from langchain.chat_models import ChatOpenAI
+from langchain_huggingface import HuggingFacePipeline
+from langchain.prompts import PromptTemplate
+from langchain.chains import RetrievalQA, LLMChain
+from langchain.vectorstores import FAISS
+from datasets import load_dataset
+from encoder import Encoder
+from transformers import pipeline
+import transformers
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import faiss
+import numpy as np
+import time
+import torch
+from langchain.llms import OpenAI
+from utils import *
+import csv
+from langchain_community.llms import VLLM
+
+DEFAULT_STEP_DECOMPOSE_QUERY_TRANSFORM_SYS_TMPL = (
+    "The original question is as follows: {initial_query}\n"
+    "We have an opportunity to answer some, or all of the question from a knowledge source. "
+    "Previous reasoning steps are provided below.\n"
+    "Given the previous reasoning, return a question that can be answered."
+    "This question can be the same as the original question, "
+    "or this question can represent a subcomponent of the overall question."
+    "It should not be irrelevant to the original question.\n"
+    "If we cannot extract more information from the context, provide 'None' as the answer. "
+    "Some examples are given below: "
+    "\n\n"
+    "Question: How many Grand Slam titles does the winner of the 2020 Australian "
+    "Open have?\n"
+    "Previous reasoning: None\n"
+    "Next question: Who was the winner of the 2020 Australian Open? "
+    "\n\n"
+    "Question: How many Grand Slam titles does the winner of the 2020 Australian "
+    "Open have?\n"
+    "Previous reasoning:\n"
+    "- Who was the winner of the 2020 Australian Open? \n"
+    "- The winner of the 2020 Australian Open was Novak Djokovic.\n"
+    "New question: How many Grand Slam titles does Novak Djokovic have?"
+    "\n\n"
+    "Question: How many Grand Slam titles does the winner of the 2020 Australian "
+    "Open have?\n"
+    "Australian Open - includes biographical information for each winner\n"
+    "Previous reasoning:\n"
+    "- Who was the winner of the 2020 Australian Open? \n"
+    "- The winner of the 2020 Australian Open was Novak Djokovic.\n"
+    "- How many Grand Slam titles does Novak Djokovic have?\n"
+    "- Novak Djokovic has 24 Grand Slam titles.\n"
+    "New question: None"
+    "\n\n"
+    "Only output the question, do not output any other word.\n"
+)
+
+DEFAULT_STEP_DECOMPOSE_QUERY_TRANSFORM_USR_TMPL = (
+    "Question: {question}\n"
+    "Knowledge source context: {reference}\n"
+    "Previous reasoning: {prev_reasoning}\n"
+    "New question: "
+)
+
+def load_corpus(corpus_path: str, hf=False):
+    if hf:
+        corpus = load_dataset("json", data_files=corpus_path)
+        corpus = corpus['train']
+    return corpus
+
+def load_docs(corpus, doc_idxs):
+    return [corpus[int(idx)] for idx in doc_idxs]
+
+def load_retriever(faiss_index_path: str, nprobe: int = 128):
+    encoder = Encoder(
+        model_name="e5-large-v2",
+        model_path="intfloat/e5-large-v2",
+        pooling_method="mean",
+        max_length=512,
+        use_fp16=False
+    )
+    index = faiss.read_index(faiss_index_path)
+    if isinstance(index, faiss.IndexIVF):
+        index.nprobe = nprobe
+    else:
+        print("Warning: This index is not an IVF index; 'nprobe' has no effect.")   
+    return index, encoder
+
+def get_llm():
+    return VLLM(
+        model="meta-llama/Llama-3.1-8B-Instruct",
+        trust_remote_code=True,
+        max_new_tokens=200,
+        top_k=50,
+        top_p=0.9,
+        temperature=0.7,
+    )
+
+def hyde_rag_offline(
+    queries: list[str],
+    encoder,
+    retriever,
+    corpus,
+    llm,
+    request_per_second = 1,
+    write_file: str = None,
+    top_k: int = 1,
+    nprobe: int = 512
+):
+    hypo_prompt = PromptTemplate(
+        input_variables=["query"],
+        template="Write a plausible answer to the following question, even if unsure:\n\n{query}"
+    )
+    hypo_chain = hypo_prompt | llm
+
+    answer_prompt = PromptTemplate(
+        input_variables=["batch_results", "query"],
+        template="Answer the question based on the given documents."
+                 " Please give a complete sentence and a single answer. Do not output other words after the answer. "
+                 "\nThe following are given documents:\n{batch_results}\nQuestion: {query}"
+    )
+    answer_chain = answer_prompt | llm
+
+    results = []
+    query_latency = []
+
+    t1 = time.time()
+
+    # Step 1: Generate hypothetical answers
+    hypo_inputs = [{"query": q} for q in queries]
+    hypo_answers = hypo_chain.batch(hypo_inputs)
+
+    # Step 2: Encode and retrieve using hypo answers
+    hypo_embeddings = encoder.encode(hypo_answers)
+    scores, idxs = retriever.search(np.array(hypo_embeddings), k=top_k)
+
+    # Step 3: Build prompts and generate answers
+    input_dicts = []
+    for j in range(len(queries)):
+        doc_idxs = np.array(idxs[j]).reshape(-1)
+        batch_results = load_docs(corpus, doc_idxs)
+        input_dicts.append({
+            "query": queries[j],
+            "batch_results": batch_results,
+        })
+
+    answers = answer_chain.batch(input_dicts)
+
+    t2 = time.time()
+    total_latency = t2 - t1
+    #avg_latency = total_latency / len(queries)
+    print(f"\nHyDE Average query latency:     {total_latency:.4f} s")
+
+    for j, answer in enumerate(answers):
+        results.append({
+            "question": queries[j],
+            "answer": answer,
+        })
+
+    if write_file:
+        with open(write_file, "a+", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["hyde", nprobe, len(queries), total_latency])
+
+    return results
+

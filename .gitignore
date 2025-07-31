@@ -1,0 +1,5 @@
+faiss/build
+*.egg-info
+*/__pycache__
+*.pdf
+*.csv
