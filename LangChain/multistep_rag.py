@@ -161,6 +161,6 @@ def multistep_rag(
     if write_file:
         with open(write_file, 'a+', newline='') as f:
             writer = csv.writer(f)
-            writer.writerow(["multistep", nprobe, request_per_second, avg_latency])
+            writer.writerow(["Langchain","multistep", nprobe, request_per_second, avg_latency])
 
     return results

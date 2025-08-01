@@ -158,7 +158,7 @@ def hyde_rag_offline(
     if write_file:
         with open(write_file, "a+", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(["hyde", nprobe, len(queries), total_latency])
+            writer.writerow(["LangChain", "hyde","", nprobe, 0, len(queries), total_latency])
 
     return results
 

@@ -30,6 +30,14 @@ from recomp_offline import recomp_rag_offline
 from iterative_offline import iterative_rag_offline
 from multistep_offline import multistep_rag_offline
 
+import os
+
+root_dir = os.getenv("ROOT_DIR")
+index_path = os.getenv("index_path")
+corpus_path = os.getenv("corpus_path")
+print("Root directory:", root_dir)
+
+
 def load_corpus(corpus_path: str, hf=False):
     if hf:
         corpus = load_dataset("json", data_files=corpus_path)
@@ -52,12 +60,12 @@ def load_retriever(faiss_index_path: str, nprobe: int = 128):
         print("Warning: This index is not an IVF index; 'nprobe' has no effect.")   
     return index, encoder
 
-def get_llm():
+def get_llm(model_name: str = "meta-llama/Llama-3.1-8B-Instruct"):
     return VLLM(
         # model="meta-llama/Llama-3.1-8B-Instruct",
         #model="meta-llama/Llama-2-13b-chat-hf",
         #model = "/home/vibha/models/Llama-2-13b-chat",
-        model="facebook/opt-iml-30b",
+        model= model_name, #"facebook/opt-iml-30b",
         trust_remote_code=True,
         max_new_tokens=200,
         top_k=50,
@@ -163,6 +171,7 @@ def parse_args():
     parser.add_argument("--workflow", type=str, required=True, choices=["sequential", "hyde", "recomp", "iterative", "multistep", "sequential_offline", "hyde_offline", "recomp_offline", "iterative_offline", "multistep_offline", "seqrec", "hyderec", "recmulti", "multiiter"])
     parser.add_argument("--nprobe", type=int, required=True)
     parser.add_argument("--data_dir", type=str, required=True)
+    parser.add_argument("--model", type=str, default="meta-llama/Llama-3.1-8B-Instruct")
     return parser.parse_args()
 
 def main():
@@ -172,8 +181,8 @@ def main():
         "data_dir": args.data_dir,
         "data_source": "huggingface",
         "split_name": "dev",
-        "index_path": "/dataset/index_0319/wiki/IVF4096/ivf.index",
-        "corpus_path":  "/../../../dataset/wiki_dataset/corpora/wiki/enwiki-dec2021/text-list-100-sec.jsonl",
+        "index_path": index_path, #"/dataset/index_0319/wiki/IVF4096/ivf.index",
+        "corpus_path":  corpus_path, #"/../../../dataset/wiki_dataset/corpora/wiki/enwiki-dec2021/text-list-100-sec.jsonl",
         "nprobe": args.nprobe,
         "retrieval_topk": 1,
         "generator_model": "llama3-8B-instruct",
@@ -205,7 +214,7 @@ def main():
     corpus_path = config_dict["corpus_path"]
     retriever, encoder = load_retriever(faiss_index_path, args.nprobe)
     corpus = load_corpus(corpus_path, hf=True)
-    llm = get_llm()
+    llm = get_llm(args.model)
 
     if args.nprobe == 512:
         rps_list = range(1, 11, 1)
@@ -216,46 +225,46 @@ def main():
     
     for rps in rps_list:
         if args.workflow == "sequential":
-            sequential_rag(encoder=encoder, retriever=retriever, corpus=corpus, llm=llm, queries=questions, write_file="sequential.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe)
+            sequential_rag(encoder=encoder, retriever=retriever, corpus=corpus, llm=llm, queries=questions, write_file=root_dir+"/test_result.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe)
 
         elif args.workflow == "hyde":
-            hyde_rag(queries=questions, write_file="hyde.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
+            hyde_rag(queries=questions, write_file=root_dir+"/test_result.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
 
         elif args.workflow == "recomp":
-            recomp_rag(queries=questions, write_file="recomp.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
+            recomp_rag(queries=questions, write_file=root_dir+"/test_result.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
         
         elif args.workflow == "iterative":
-            iterative_rag(queries=questions, write_file="iterative.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
+            iterative_rag(queries=questions, write_file=root_dir+"/test_result.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
 
         elif args.workflow == "multistep":
-            multistep_rag(queries=questions, write_file="multistep.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
+            multistep_rag(queries=questions, write_file=root_dir+"/test_result.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
         
         elif args.workflow == "sequential_offline":
-            sequential_rag_offline(encoder=encoder, retriever=retriever, corpus=corpus, llm=llm, queries=questions, write_file="sequential_offline.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe)
+            sequential_rag_offline(encoder=encoder, retriever=retriever, corpus=corpus, llm=llm, queries=questions, write_file=root_dir+"/offline_result.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe)
 
         elif args.workflow == "hyde_offline":
-            hyde_rag_offline(queries=questions, write_file="hyde_offline.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
+            hyde_rag_offline(queries=questions, write_file=root_dir+"/offline_result.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
 
         elif args.workflow == "recomp_offline":
-            recomp_rag_offline(queries=questions, write_file="recomp_offline.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
+            recomp_rag_offline(queries=questions, write_file=root_dir+"/offline_result.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
         
         elif args.workflow == "iterative_offline":
-            iterative_rag_offline(queries=questions, write_file="iterative_offline.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
+            iterative_rag_offline(queries=questions, write_file=root_dir+"/offline_result.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
 
         elif args.workflow == "multistep_offline":
-            multistep_rag_offline(queries=questions, write_file="multistep_offline.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
+            multistep_rag_offline(queries=questions, write_file=root_dir+"/offline_result.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
         
         elif args.workflow == "seqrec":
-            hybrid_dual_rag(queries=questions, workflow1 = sequential_rag, workflow2 = recomp_rag, write_file="seqrec.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
+            hybrid_dual_rag(queries=questions, workflow1 = sequential_rag, workflow2 = recomp_rag, write_file=root_dir+"/concurrent_result.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
 
         elif args.workflow == "hyderec":
-            hybrid_dual_rag(queries=questions, workflow1 = hyde_rag, workflow2 = recomp_rag, write_file="hydrec.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
+            hybrid_dual_rag(queries=questions, workflow1 = hyde_rag, workflow2 = recomp_rag, write_file=root_dir+"/concurrent_result.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
 
         elif args.workflow == "recmulti":
-            hybrid_dual_rag(queries=questions, workflow1 = recomp_rag, workflow2 = multistep_rag, write_file="recmulti.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
+            hybrid_dual_rag(queries=questions, workflow1 = recomp_rag, workflow2 = multistep_rag, write_file=root_dir+"/concurrent_result.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
          
         elif args.workflow == "multiiter":
-            hybrid_dual_rag(queries=questions, workflow1 = multistep_rag, workflow2 = iterative_rag, write_file="multiiter.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
+            hybrid_dual_rag(queries=questions, workflow1 = multistep_rag, workflow2 = iterative_rag, write_file=root_dir+"/concurrent_result.csv", request_per_second=rps, top_k=1, nprobe=args.nprobe, encoder=encoder, retriever=retriever, corpus=corpus, llm=llm)
         
 
 if __name__ == "__main__":

@@ -145,6 +145,6 @@ def sequential_rag_offline(
     if write_file:
         with open(write_file, "a+", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(["sequential", nprobe, "-", total_time])
+            writer.writerow(["LangChain","sequential", "", nprobe, 0, 0, total_time])
 
     return results
