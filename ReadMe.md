@@ -15,18 +15,14 @@ Available at: https://hub.docker.com/r/pytorch/pytorch
 
 ## Environment Setup
 
-1. Clone Repository
-   git clone <your-repo-url>
-   cd <repo-root>
-
-2. Create and Activate Conda Environment (Recommended)
+### 1. Create and Activate Conda Environment (Recommended)
    conda create -n heterag python=3.9 -y
    conda activate heterag
 
-3. Install Python Dependencies
+### 2. Install Python Dependencies
    pip install -r requirements.txt
 
-4. Install System and FAISS Dependencies
+### 3. Install System and FAISS Dependencies
    #### \# System packages
    apt install -y python3-dev
 
@@ -37,23 +33,41 @@ Available at: https://hub.docker.com/r/pytorch/pytorch
    #### \# Pip packages
    pip install -r requirement.txt
 
-5. Build Custom FAISS for HeteRAG
-   cd faiss
-   sh build_from_source.sh
-
-6. Build HedraRAG
+### 4. Build Evaluation Software
    sh Install.sh
 
-7. Build LangChain (baseline) [optional]
+### 5. Build LangChain (baseline) [optional]
    cd LangChain
    pip install requirements.txt
 
 ## Dataset Preparation
 
-1. Before running the code, the user needs to download the pre-built index and corpus used in the experiments.  
-   The dataset is available at: [<your-download-link-here>].
+The original paper uses a large Wikipedia page index (>100GB), which may be inconvenient for quick prototyping or evaluation. To simplify the setup, we provide a smaller pre-built index based on the MS MARCO passage corpus (~36GB) to help users efficiently build and test the pipeline.
 
-2. 
+### 1. Download Pre-built Index and Corpus
+
+Please download the index and from the following link: **[https://doi.org/10.5281/zenodo.16663591](https://doi.org/10.5281/zenodo.16663591)**
+
+### 2. Configure Dataset Paths
+
+Update `data.conf` before running the pipeline:
+
+\`\`\`bash
+export index_path=/path/to/ivf.index
+export corpus_path=Tevatron/msmarco-passage-corpus
+\`\`\`
+
+- `index_path`: Path to the downloaded FAISS index file
+- `corpus_path`: Defaults to the [Tevatron MS MARCO passage corpus](https://huggingface.co/datasets/Tevatron/msmarco-passage-corpus) on HuggingFace
+
+### 3. Using Custom Corpus and Index (Optional)
+
+You can also use your own corpus and corresponding index by updating the paths accordingly:
+
+- Set `index_path` to your own FAISS index
+- Set `corpus_path` to either a local path or HuggingFace dataset
+
+If you want to build your own FAISS IVF index, we recommend using the [`intfloat/e5-large-v2`](https://huggingface.co/intfloat/e5-large-v2) model to encode your documents.
 
 ## Running Experiments
 
