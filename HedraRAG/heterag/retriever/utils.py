@@ -228,7 +228,10 @@ def pooling(pooler_output, last_hidden_state, attention_mask=None, pooling_metho
 
 
 def load_corpus(corpus_path: str, hf = False):
-    if (hf):
+    if corpus_path == "Tevatron/msmarco-passage-corpus":
+        corpus = datasets.load_dataset(corpus_path)
+        corpus = corpus['train']
+    elif (hf):
         corpus = datasets.load_dataset(corpus_path)
         corpus = corpus['train']
     else:

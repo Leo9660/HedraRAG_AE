@@ -18,9 +18,6 @@ for i in "${!WORKFLOWS[@]}"; do
     nprobe=${NPROBE_LIST[$i]}
     minibatch=${NPROBE_MINIBATCH_LIST[$i]}
 
-    echo "$index_path"
-    echo "$corpus_path"
-
     echo "[[[Running HedraRAG: workflow=$WORKFLOW, dataset=$dataset, nprobe=$nprobe, minibatch=$minibatch, spec_total_size=$spec]]]"
     CUDA_VISIBLE_DEVICES=0 python ../../HedraRAG/test/test_serve_online_rps.py \
       --gpu_id 0 \
