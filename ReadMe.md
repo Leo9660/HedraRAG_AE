@@ -15,21 +15,29 @@ Available at: https://hub.docker.com/r/pytorch/pytorch
 ## Environment Setup
 
 1. Clone Repository
+
    ```git clone <your-repo-url>```
+
    ```cd <repo-root>```
 
 2. Create and Activate Conda Environment (Recommended)
+
    ```conda create -n heterag python=3.9 -y```
+
    ```conda activate heterag```
 
 3. Install Dependencies
+
    ```bash Dependency.sh```
 
 6. Build HedraRAG
+
    ```bash Install.sh```
 
 7. Build LangChain (baseline) [optional]
+
    ```cd LangChain```
+
    ```pip install -r requirements.txt```
 
 ## Dataset Preparation
@@ -44,10 +52,11 @@ Please download the index and from the following link: **[https://doi.org/10.528
 
 Update `data.conf` before running the pipeline:
 
-\`\`\`bash
+```
 export index_path=/path/to/ivf.index
+
 export corpus_path=Tevatron/msmarco-passage-corpus
-\`\`\`
+```
 
 - `index_path`: Path to the downloaded FAISS index file
 - `corpus_path`: Defaults to the [Tevatron MS MARCO passage corpus](https://huggingface.co/datasets/Tevatron/msmarco-passage-corpus) on HuggingFace
