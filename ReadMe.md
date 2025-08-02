@@ -23,7 +23,7 @@ Available at: https://hub.docker.com/r/pytorch/pytorch
    ```conda activate heterag```
 
 3. Install Dependencies
-   ```bash ```
+   ```bash Dependency.sh```
 
 6. Build HedraRAG
    ```bash Install.sh```
