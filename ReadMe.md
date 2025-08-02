@@ -34,10 +34,32 @@ Available at: https://hub.docker.com/r/pytorch/pytorch
 
 ## Dataset Preparation
 
-1. Before running the code, the user needs to download the pre-built index and corpus used in the experiments.  
-   The dataset is available at: [<your-download-link-here>].
+The original paper uses a large Wikipedia page index (>100GB), which may be inconvenient for quick prototyping or evaluation. To simplify the setup, we provide a smaller pre-built index based on the MS MARCO passage corpus (~36GB) to help users efficiently build and test the pipeline.
 
-2. 
+### 1. Download Pre-built Index and Corpus
+
+Please download the index and from the following link: **[https://doi.org/10.5281/zenodo.16663591](https://doi.org/10.5281/zenodo.16663591)**
+
+### 2. Configure Dataset Paths
+
+Update `data.conf` before running the pipeline:
+
+\`\`\`bash
+export index_path=/path/to/ivf.index
+export corpus_path=Tevatron/msmarco-passage-corpus
+\`\`\`
+
+- `index_path`: Path to the downloaded FAISS index file
+- `corpus_path`: Defaults to the [Tevatron MS MARCO passage corpus](https://huggingface.co/datasets/Tevatron/msmarco-passage-corpus) on HuggingFace
+
+### 3. Using Custom Corpus and Index (Optional)
+
+You can also use your own corpus and corresponding index by updating the paths accordingly:
+
+- Set `index_path` to your own FAISS index
+- Set `corpus_path` to either a local path or HuggingFace dataset
+
+If you want to build your own FAISS IVF index, we recommend using the [`intfloat/e5-large-v2`](https://huggingface.co/intfloat/e5-large-v2) model to encode your documents.
 
 ## Running Experiments
 

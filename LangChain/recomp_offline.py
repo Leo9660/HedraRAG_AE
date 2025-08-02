@@ -127,6 +127,6 @@ def recomp_rag_offline(
     if write_file:
         with open(write_file, "a+", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(["recomp", nprobe, "-", total_latency])
+            writer.writerow(["LangChain", "recomp", "", nprobe, 0, 0, total_latency])
 
     return results

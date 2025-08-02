@@ -9,4 +9,5 @@ cd ../HedraRAG
 pip install -e .
 
 # Build Langchain (Optional)
-cd 
+cd ../LangChain
+pip install requirements.txt

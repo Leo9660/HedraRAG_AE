@@ -172,6 +172,6 @@ def sequential_rag(
     if write_file:
         with open(write_file, "a+", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(["sequential", nprobe, request_per_second, avg_latency])
+            writer.writerow(["Langchain","sequential", nprobe, request_per_second, avg_latency])
 
     return results

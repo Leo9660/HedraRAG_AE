@@ -176,6 +176,6 @@ def hyde_rag(
     if write_file:
         with open(write_file, "a+", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(["hyde", nprobe, request_per_second, avg_latency])
+            writer.writerow(["Langchain","hyde", nprobe, request_per_second, avg_latency])
 
     return results

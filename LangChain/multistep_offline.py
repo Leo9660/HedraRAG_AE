@@ -142,6 +142,6 @@ def multistep_rag_offline(
     if write_file:
         with open(write_file, 'a+', newline='') as f:
             writer = csv.writer(f)
-            writer.writerow(["multistep", nprobe, len(queries), avg_latency])
+            writer.writerow(["LangChain","multistep", "", nprobe, 0, len(queries), avg_latency])
 
     return results
