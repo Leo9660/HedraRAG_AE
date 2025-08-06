@@ -1,4 +1,5 @@
 #!/bin/bash
+source ../../data.conf
 
 OUTPUT_FILE="concurrent_result.csv"
 
@@ -25,6 +26,7 @@ for i in "${!WORKFLOWS1[@]}"; do
 
         echo "[[[Running: workflow=$WORKFLOW1+$WORKFLOW2, dataset=$dataset, nprobe=$nprobe, minibatch=$minibatch, spec_total_size=0]]]"
         CUDA_VISIBLE_DEVICES=0 python ../../HedraRAG/test/test_serve_concurrent_rps.py \
+          --model_path "$model_path" \
           --gpu_id 0 \
           --spec_total_size 0 \
           --spec_method heteRAG \
@@ -40,6 +42,7 @@ for i in "${!WORKFLOWS1[@]}"; do
 
       echo "[[[Running: workflow=$WORKFLOW, dataset=$dataset, nprobe=$nprobe, minibatch=$minibatch, spec_total_size=0]]]"
       CUDA_VISIBLE_DEVICES=0 python ../../HedraRAG/test/test_sequential_concurrent_rps.py \
+        --model_path "$model_path" \
         --gpu_id 0 \
         --spec_total_size 0 \
         --spec_method heteRAG \

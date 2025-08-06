@@ -56,10 +56,13 @@ Update `data.conf` before running the pipeline:
 export index_path=/path/to/ivf.index
 
 export corpus_path=Tevatron/msmarco-passage-corpus
+
+export model_path=/huggingface/model_path
 ```
 
 - `index_path`: Path to the downloaded FAISS index file
 - `corpus_path`: Defaults to the [Tevatron MS MARCO passage corpus](https://huggingface.co/datasets/Tevatron/msmarco-passage-corpus) on HuggingFace
+- `model_path`: HuggingFace model path used for generation
 
 ### 3. Using Custom Corpus and Index (Optional)
 

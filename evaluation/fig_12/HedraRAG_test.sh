@@ -1,4 +1,5 @@
 #!/bin/bash
+source ../../data.conf
 
 OUTPUT_FILE="test_result.csv"
 
@@ -20,6 +21,7 @@ for i in "${!WORKFLOWS[@]}"; do
 
     echo "[[[Running HedraRAG: workflow=$WORKFLOW, dataset=$dataset, nprobe=$nprobe, minibatch=$minibatch, spec_total_size=$spec]]]"
     CUDA_VISIBLE_DEVICES=0 python ../../HedraRAG/test/test_serve_online_rps.py \
+      --model_path "$model_path" \
       --gpu_id 0 \
       --spec_total_size $spec \
       --spec_method heteRAG \

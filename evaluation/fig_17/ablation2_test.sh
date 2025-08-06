@@ -1,14 +1,16 @@
-MODEL_PATH="meta-llama/Llama-3.1-8B-Instruct"
+#!/bin/bash
+source ../../data.conf
+
 RETRIEVER_PATH="intfloat/e5-large-v2"
 
-export CUDA_VISIBLE_DEVICES=7
+export CUDA_VISIBLE_DEVICES=0
 
 OUTPUT_FILE="ablation2_latency.csv"
 OUTPUT_FILE2="ablation2_accuracy.csv"
 
 echo "[[[[HedraRAG, None speculation]]]] RPS=4"
 python ../../HedraRAG/test/test_ablation2.py \
-    --model_path "$MODEL_PATH" \
+    --model_path "$model_path" \
     --retriever_path "$RETRIEVER_PATH" \
     --gpu_id 0 \
     --spec_total_size 0 \
@@ -21,7 +23,7 @@ python ../../HedraRAG/test/test_ablation2.py \
 
 echo "[[[[HedraRAG, Speculative execution]]]]  RPS=4"
 python ../../HedraRAG/test/test_ablation2.py \
-    --model_path "$MODEL_PATH" \
+    --model_path "$model_path" \
     --retriever_path "$RETRIEVER_PATH" \
     --gpu_id 0 \
     --spec_total_size 8 \
@@ -34,7 +36,7 @@ python ../../HedraRAG/test/test_ablation2.py \
 
 echo "[[[[RAGCache]]]] RPS=4"
 python ../../HedraRAG/test/test_ablation2.py \
-    --model_path "$MODEL_PATH" \
+    --model_path "$model_path" \
     --retriever_path "$RETRIEVER_PATH" \
     --gpu_id 0 \
     --spec_method RAGCache \
@@ -46,7 +48,7 @@ python ../../HedraRAG/test/test_ablation2.py \
 
 echo "[[[[HedraRAG, None speculation]]]] RPS=8"
 python ../../HedraRAG/test/test_ablation2.py \
-    --model_path "$MODEL_PATH" \
+    --model_path "$model_path" \
     --retriever_path "$RETRIEVER_PATH" \
     --gpu_id 0 \
     --spec_total_size 0 \
@@ -59,7 +61,7 @@ python ../../HedraRAG/test/test_ablation2.py \
 
 echo "[[[[HedraRAG, Speculative execution]]]] RPS=8"
 python ../../HedraRAG/test/test_ablation2.py \
-    --model_path "$MODEL_PATH" \
+    --model_path "$model_path" \
     --retriever_path "$RETRIEVER_PATH" \
     --gpu_id 0 \
     --spec_total_size 8 \
@@ -72,7 +74,7 @@ python ../../HedraRAG/test/test_ablation2.py \
 
 echo "[[[[RAGCache]]]] RPS=8"
 python ../../HedraRAG/test/test_ablation2.py \
-    --model_path "$MODEL_PATH" \
+    --model_path "$model_path" \
     --retriever_path "$RETRIEVER_PATH" \
     --gpu_id 0 \
     --spec_method RAGCache \

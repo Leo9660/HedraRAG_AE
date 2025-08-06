@@ -1,4 +1,5 @@
 #!/bin/bash
+source ../../data.conf
 
 OUTPUT_FILE="test_result.csv"
 
@@ -18,6 +19,7 @@ for i in "${!WORKFLOWS[@]}"; do
 
     echo "[[[Running FlashRAG: workflow=$WORKFLOW, dataset=$DATASET]]]"
     CUDA_VISIBLE_DEVICES=0 python ../../HedraRAG/test/test_sequential_online_rps.py \
+        --model_path "$model_path" \
         --gpu_id 0 \
         --spec_total_size 0 \
         --spec_method heteRAG \
