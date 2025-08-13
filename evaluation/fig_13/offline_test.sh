@@ -36,7 +36,9 @@ for i in "${!WORKFLOWS[@]}"; do
             --data_dir $dataset \
             --rag_workflow "$WORKFLOW" \
             --retrieval_batchsize $retrieval_batchsize \
-            --write_file "$OUTPUT_FILE"
+            --write_file "$OUTPUT_FILE" \
+            --index_path "$index_path" \
+            --corpus_path "$corpus_path"
         done
       done
   done
@@ -53,7 +55,9 @@ for i in "${!WORKFLOWS[@]}"; do
       --request_per_second 0 \
       --data_dir $dataset \
       --rag_workflow "$WORKFLOW" \
-      --write_file "$OUTPUT_FILE"
+      --write_file "$OUTPUT_FILE" \
+      --index_path "$index_path" \
+      --corpus_path "$corpus_path"
   done
 
 done

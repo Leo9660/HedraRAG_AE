@@ -31,7 +31,9 @@ for i in "${!WORKFLOWS[@]}"; do
         --nprobe_minibatch $nprobe \
         --data_dir "$DATASET" \
         --rag_workflow "$WORKFLOW" \
-        --write_file "$file_name1"
+        --write_file "$file_name1" \
+        --index_path "$index_path" \
+        --corpus_path "$corpus_path"
 
     echo "[[[Running FlashRAG: workflow=$WORKFLOW, dataset=$DATASET]]]"
     CUDA_VISIBLE_DEVICES=0 python ../../HedraRAG/test/test_sequential_online_rps.py \
@@ -43,6 +45,8 @@ for i in "${!WORKFLOWS[@]}"; do
         --nprobe_minibatch $nprobe \
         --data_dir "$DATASET" \
         --rag_workflow "$WORKFLOW" \
-        --write_file "$file_name2"
+        --write_file "$file_name2" \
+        --index_path "$index_path" \
+        --corpus_path "$corpus_path"
   done
 done

@@ -32,7 +32,9 @@ for i in "${!WORKFLOWS[@]}"; do
       --nprobe_minibatch $minibatch \
       --data_dir $dataset \
       --rag_workflow "$WORKFLOW" \
-      --write_file "$file_name1"
+      --write_file "$file_name1" \
+      --index_path "$index_path" \
+      --corpus_path "$corpus_path"
 
     echo "[[[Running HedraRAG: workflow=$WORKFLOW, dataset=$dataset, nprobe=$nprobe, minibatch=$minibatch, spec_total_size=$spec]]]"
     CUDA_VISIBLE_DEVICES=0 python ../../HedraRAG/test/test_serve_online_rps.py \
@@ -44,7 +46,9 @@ for i in "${!WORKFLOWS[@]}"; do
       --nprobe_minibatch $minibatch \
       --data_dir $dataset \
       --rag_workflow "$WORKFLOW" \
-      --write_file "$file_name2"
+      --write_file "$file_name2" \
+      --index_path "$index_path" \
+      --corpus_path "$corpus_path"
   done
 
 done

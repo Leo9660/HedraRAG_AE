@@ -37,7 +37,9 @@ for i in "${!WORKFLOWS1[@]}"; do
           --rag_workflow1 "$WORKFLOW1" \
           --rag_workflow2 "$WORKFLOW2" \
           --retrieval_batchsize $retrieval_batchsize \
-          --write_file "$OUTPUT_FILE"
+          --write_file "$OUTPUT_FILE" \
+          --index_path "$index_path" \
+          --corpus_path "$corpus_path"
       done
 
       echo "[[[Running: workflow=$WORKFLOW, dataset=$dataset, nprobe=$nprobe, minibatch=$minibatch, spec_total_size=0]]]"
@@ -52,6 +54,8 @@ for i in "${!WORKFLOWS1[@]}"; do
         --data_dir $dataset \
         --rag_workflow1 "$WORKFLOW1" \
         --rag_workflow2 "$WORKFLOW2" \
-        --write_file "$OUTPUT_FILE"
+        --write_file "$OUTPUT_FILE" \
+        --index_path "$index_path" \
+        --corpus_path "$corpus_path"
   done
 done
