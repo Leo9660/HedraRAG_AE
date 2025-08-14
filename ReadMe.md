@@ -83,19 +83,20 @@ Steps:
 
 - Download the corpus file
 
-Download `text-list-100-sec.jsonl` from the above link.
+   Download `text-list-100-sec.jsonl` from the above link.
 
 - Run the build script
 
-Use the provided `build_index.sh` and modify the first two lines:
-corpus_path=/path/to/text-list-100-sec.jsonl
-save_dir=/path/to/save_dir
+   Use the provided `build_index.sh` and modify the first two lines:
+   corpus_path=/path/to/text-list-100-sec.jsonl
+   save_dir=/path/to/save_dir
 
    - corpus_path: Path to the downloaded `text-list-100-sec.jsonl` file
    - save_dir: Output directory; the generated `ivf.index` will be stored here
 
 - Preprocessing and storage optimization
-   - The build script supports a checkpoint mechanism for resuming.
+   - The build script supports a checkpoint mechanism for resuming. If the run fails midway, you can re-execute `build_index.sh` to resume and continue.
+   - The process may consume up to 240GB of storage space and take over 30 hours on our CPU.
    - After preprocessing is complete, you can delete `emb_e5.memmap` to save storage space.
 
 - Update the configuration
