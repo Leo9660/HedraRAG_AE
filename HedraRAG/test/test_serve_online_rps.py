@@ -51,7 +51,7 @@ def main():
         "use_fp16": True,
         "pooling_method": "mean",
         "generator_max_input_len": 4096,
-        "gpu_memory_utilization": 0.8,
+        "gpu_memory_utilization": 0.4,
         "enforce_eager": False,
         "generation_params": {'max_tokens': 128},
         "task_batch": 64,

@@ -226,7 +226,6 @@ def pooling(pooler_output, last_hidden_state, attention_mask=None, pooling_metho
     else:
         raise NotImplementedError("Pooling method not implemented!")
 
-
 def load_corpus(corpus_path: str, hf = False):
     if corpus_path == "Tevatron/msmarco-passage-corpus":
         corpus = datasets.load_dataset(corpus_path)
