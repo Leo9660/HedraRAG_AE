@@ -73,6 +73,38 @@ You can also use your own corpus and corresponding index by updating the paths a
 
 If you want to build your own FAISS IVF index, we recommend using the [`intfloat/e5-large-v2`](https://huggingface.co/intfloat/e5-large-v2) model to encode your documents.
 
+### 4. Build the Corpus Used in the Paper
+
+The corpus and index used in the paper are based on Wikipedia passages up to the end of 2022, available at https://zenodo.org/records/16849723, and encoded with intfloat/e5-large-v2.
+
+Since the index is large, we recommend building it locally. On a high-performance CPU+GPU machine, this process may take several days.
+
+Steps:
+
+- Download the corpus file
+
+Download `text-list-100-sec.jsonl` from the above link.
+
+- Run the build script
+
+Use the provided `build_index.sh` and modify the first two lines:
+corpus_path=/path/to/text-list-100-sec.jsonl
+save_dir=/path/to/save_dir
+
+   - corpus_path: Path to the downloaded `text-list-100-sec.jsonl` file
+   - save_dir: Output directory; the generated `ivf.index` will be stored here
+
+- Preprocessing and storage optimization
+   - The build script supports a checkpoint mechanism for resuming.
+   - After preprocessing is complete, you can delete `emb_e5.memmap` to save storage space.
+
+- Update the configuration
+   In `data.conf`, set:
+   export corpus_path=/path/to/text-list-100-sec.jsonl
+   export index_path=/path/to/save_dir/ivf.index
+
+   You can then run the paper experiments directly.
+
 ## Running Experiments
 
 Once the environment is set up, you can run the evaluation scripts to reproduce the experimental results.
