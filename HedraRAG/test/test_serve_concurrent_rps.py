@@ -83,7 +83,7 @@ def main():
     executor = HeteragExecutor(config)
 
     #warm up
-    executor.add_requests_string(string_list, workflow = args.rag_workflow)
+    executor.add_requests_string(string_list, workflow = args.rag_workflow1)
     while executor.execute() < len(string_list):
         continue
 
