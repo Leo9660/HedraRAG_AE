@@ -10,4 +10,4 @@ pip install -e .
 
 # Build Langchain (Optional)
 cd ../LangChain
-pip install requirements.txt
+pip install -r requirements.txt
