@@ -115,3 +115,14 @@ We provide a series of scripts named `run_fig[X].sh`, each corresponding to Figu
 All individual execution and plotting scripts are located in the `evaluation/` directory.
 
 The final plots can be found in the `evaluation/output_figure` directory.
+
+## Expected Resource Usage
+
+The experiments in this artifact are designed to be executable on modern GPU-CPU servers with large memory capacity.
+
+- **GPU requirements**:  
+  - To reproduce the full experiments in the paper, we recommend at least **200 GB of CPU memory** and **80 GB of GPU memory**.
+
+- **Runtime per experiment**:  
+  - `run_fig12.sh`: ~1 hour  
+  - All other `run_fig[X].sh` scripts: ≤0.5 hour  
