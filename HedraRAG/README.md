@@ -78,3 +78,7 @@ Development Notes
   - Adaptive GPU index cache sizing based on KV cache pressure and retrieval workload
   - New graph transformation rules for dynamic node partitioning and dependency realignment
 
+Acknowledgments
+-----------------
+We would like to express our special thanks to the [FlashRAG](https://github.com/RUC-NLPIR/FlashRAG) project for its framework contributions and for the organization of various datasets and RAG workflows, which greatly facilitated the development and evaluation of HeteRAG.
+
